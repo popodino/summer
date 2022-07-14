@@ -17,9 +17,9 @@ import java.util.List;
 @Mapper
 public interface TestMapper {
 
-    @Select(query = "select id from t_city where id = ?")
+    @Select(query = "select name from t_city where id = ?")
     //@ResultType(type = int.class)
-    public int getName(String id);
+    public String getName(String id);
 
     @Select(query = "select id,name from t_city where id = ?")
     @ResultType(type = City.class)
