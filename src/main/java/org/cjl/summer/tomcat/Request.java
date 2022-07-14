@@ -32,8 +32,6 @@ public class Request {
                 content = new String(buff, 0, len);
             }
 
-            System.out.println(content);
-
             String line = content.split("\\n")[0];
             String[] header = line.split(" ");
             this.method = header[0];
