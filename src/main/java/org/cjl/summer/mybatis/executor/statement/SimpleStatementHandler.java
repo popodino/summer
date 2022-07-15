@@ -1,6 +1,7 @@
-package org.cjl.summer.mybatis.executor;
+package org.cjl.summer.mybatis.executor.statement;
 
-import org.cjl.summer.mybatis.parameter.ParameterHandler;
+import org.cjl.summer.mybatis.executor.ResultSet.SimpleResultSetHandler;
+import org.cjl.summer.mybatis.executor.parameter.SimpleParameterHandler;
 import org.cjl.summer.mybatis.session.Configuration;
 
 import java.sql.Connection;
@@ -17,8 +18,8 @@ import java.util.List;
  * @Date: 7/13/2022
  * @Version: V1.0
  */
-public class StatementHandler {
-    private ResultSetHandler resultSetHandler = new ResultSetHandler();
+public class SimpleStatementHandler implements StatementHandler {
+    private SimpleResultSetHandler simpleResultSetHandler = new SimpleResultSetHandler();
 
     public <T> List<T> query(String statement, Object[] parameters, Class resultType) throws SQLException {
         Connection connection = null;
@@ -28,10 +29,10 @@ public class StatementHandler {
         try {
             connection = getConnection();
             preparedStatement = connection.prepareStatement(statement);
-            new ParameterHandler(preparedStatement).setParameter(parameters);
+            new SimpleParameterHandler(preparedStatement).setParameter(parameters);
             preparedStatement.execute();
 
-            result = resultSetHandler.handle(preparedStatement.getResultSet(),resultType);
+            result = simpleResultSetHandler.handle(preparedStatement.getResultSet(),resultType);
 
             return result;
 

@@ -1,13 +1,11 @@
-package org.cjl.summer.mybatis.executor;
+package org.cjl.summer.mybatis.executor.ResultSet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Title: ResultSetHandler
@@ -17,7 +15,7 @@ import java.util.Map;
  * @Date: 7/13/2022
  * @Version: V1.0
  */
-public class ResultSetHandler {
+public class SimpleResultSetHandler implements ResultSetHandler {
 
     private static final List<Class<?>> defalutResultType = new ArrayList<>();
 
@@ -31,6 +29,7 @@ public class ResultSetHandler {
         defalutResultType.add(double.class);
     }
 
+    @Override
     public <T> List<T> handle(ResultSet resultSet, Class resultType){
         List<Object> resultList = new ArrayList<>();
 

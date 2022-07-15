@@ -1,4 +1,4 @@
-package org.cjl.summer.mybatis.parameter;
+package org.cjl.summer.mybatis.executor.parameter;
 
 import java.sql.PreparedStatement;
 
@@ -10,13 +10,14 @@ import java.sql.PreparedStatement;
  * @Date: 7/13/2022
  * @Version: V1.0
  */
-public class ParameterHandler {
+public class SimpleParameterHandler implements ParameterHandler {
     private PreparedStatement preparedStatement;
 
-    public ParameterHandler(PreparedStatement preparedStatement) {
+    public SimpleParameterHandler(PreparedStatement preparedStatement) {
         this.preparedStatement = preparedStatement;
     }
 
+    @Override
     public void setParameter(Object[] parameters) {
         try {
 
