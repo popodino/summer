@@ -1,11 +1,15 @@
 package org.cjl.summer.summermvc.mvc;
 
+import com.alibaba.fastjson.JSON;
 import org.cjl.summer.summermvc.annotation.RequestParam;
 import org.cjl.summer.tomcat.Request;
 import org.cjl.summer.tomcat.Response;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +21,18 @@ import java.util.Map;
  * @Version: V1.0
  */
 public class HandlerAdapter {
+
+    private static final List<Class<?>> defalutDataClassList = new ArrayList<>();
+
+    static {
+        defalutDataClassList.add(String.class);
+        defalutDataClassList.add(Integer.class);
+        defalutDataClassList.add(int.class);
+        defalutDataClassList.add(boolean.class);
+        defalutDataClassList.add(long.class);
+        defalutDataClassList.add(float.class);
+        defalutDataClassList.add(double.class);
+    }
     public boolean supports(Object handler) {
         return (handler instanceof HandlerMapping);
     }
@@ -49,12 +65,7 @@ public class HandlerAdapter {
         }
 
         Class<?>[] parameterTypes = handlerMapping.getMethod().getParameterTypes();
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> type = parameterTypes[i];
-            if (type == Request.class || type == Response.class) {
-                paramIndexMapping.put(type.getName(), i);
-            }
-        }
+
 
         Map<String, String[]> parameterMap = request.getParameterMap();
 
@@ -67,15 +78,17 @@ public class HandlerAdapter {
             }
         });
 
-        if (paramIndexMapping.containsKey(Request.class.getName())) {
-            int index = paramIndexMapping.get(Request.class.getName());
-            paramValues[index] = request;
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> type = parameterTypes[i];
+            if (type == Request.class) {
+                paramValues[i] = request;
+            }else if (type == Response.class) {
+                paramValues[i] = response;
+            } else if (!defalutDataClassList.contains(type)) {
+                paramValues[i] = JSON.parseObject(request.getRequestBody(),type);
+            }
         }
 
-        if (paramIndexMapping.containsKey(Response.class.getName())) {
-            int index = paramIndexMapping.get(Response.class.getName());
-            paramValues[index] = response;
-        }
 
         Object result = handlerMapping.getMethod().invoke(handlerMapping.getController(), paramValues);
         if (null == result) {

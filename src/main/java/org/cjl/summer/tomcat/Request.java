@@ -1,7 +1,9 @@
 package org.cjl.summer.tomcat;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -14,9 +16,11 @@ import java.util.*;
  */
 public class Request {
 
-    private String method;
-    private String uri;
-    private String contextPath;
+    private String method = "";
+    private String uri = "";
+    private String contextPath = "";
+
+    private String requestBody = "";
 
     private Map<String, List<String>> parameters = new HashMap<>();
     private Map<String, String[]> parameterMap = new HashMap<>();
@@ -54,10 +58,20 @@ public class Request {
                     parameterMap.put(key, value.toArray(new String[0]));
                 });
 
-            } else {
-                this.contextPath = "";
             }
 
+            BufferedReader bufferedReader = new BufferedReader(new StringReader(content));
+            String lineContent;
+            boolean hasRequestBody = false;
+            while ((lineContent = bufferedReader.readLine()) != null) {
+                if (hasRequestBody) {
+                    requestBody += lineContent;
+                }
+                if (lineContent.trim().isEmpty()) {
+                    hasRequestBody = true;
+                }
+            }
+            bufferedReader.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -70,6 +84,10 @@ public class Request {
 
     public String getUri() {
         return this.uri;
+    }
+
+    public String getRequestBody() {
+        return this.requestBody;
     }
 
     public String getContextPath() {

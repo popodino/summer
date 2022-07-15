@@ -1,5 +1,6 @@
 package org.cjl.summer.summermvc.mvc;
 
+import com.alibaba.fastjson.JSON;
 import org.cjl.summer.mybatis.annotation.MapperScan;
 import org.cjl.summer.summermvc.annotation.ComponentScan;
 import org.cjl.summer.summermvc.annotation.GetMapping;
@@ -61,7 +62,7 @@ public class DispatchServlet extends Servlet {
         HandlerAdapter handlerAdapter = handlerAdapters.get(handlerMapping);
 
         Object result = handlerAdapter.handle(request, response, handlerMapping);
-        response.write(result == null ? "" : result.toString());
+        response.write(result == null ? "" : JSON.toJSONString(result));
     }
 
     private HandlerMapping getHandlerMapping(Request request) {

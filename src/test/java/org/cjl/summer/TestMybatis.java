@@ -1,5 +1,6 @@
 package org.cjl.summer;
 
+import com.alibaba.fastjson.JSON;
 import org.cjl.summer.mybatis.session.DefaultSqlSession;
 import org.cjl.summer.mybatis.session.SqlSessionFactory;
 
@@ -18,6 +19,7 @@ public class TestMybatis {
         DefaultSqlSession sqlSession = sqlSessionFactory.openSqlSession();
         TestMapper testMapper = sqlSession.getMapper(TestMapper.class);
         String name = testMapper.getName("110000");
+
         System.out.println(" --- " + name);
     }
 }

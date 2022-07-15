@@ -1,5 +1,6 @@
 package org.cjl.summer;
 
+import com.mysql.cj.xdevapi.JsonParser;
 import org.cjl.summer.mybatis.annotation.MapperScan;
 import org.cjl.summer.summermvc.annotation.*;
 import org.cjl.summer.tomcat.SummerBoot;
@@ -30,5 +31,11 @@ public class TestSummerBoot {
     public City test(@RequestParam("id") String id) throws Exception {
         City city = testService.getCityById(id);
         return city;
+    }
+
+    @PostMapping("/city/post")
+    public City testPost(City city){
+        city.setName("ojbk");
+       return city;
     }
 }
