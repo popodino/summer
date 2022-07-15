@@ -31,13 +31,17 @@ public class Plugin implements InvocationHandler {
         this.pluginMethodMap = pluginMethodMap;
     }
 
-    public static Object wrap(Object obj, Interceptor interceptor) {
+    public static Object wrap(Object target, Interceptor interceptor) {
         Map<Class<?>, Set<Method>> pluginMethod = getPluginMethod(interceptor);
-        Class clazz = obj.getClass();
-        return Proxy.newProxyInstance(new ProxyClassLoader()
-                , clazz.getInterfaces(), new Plugin(obj, interceptor, pluginMethod));
-    }
+        Class clazz = target.getClass();
+        Class<?>[] allInterfaces = getAllInterfaces(clazz,pluginMethod);
 
+        if(allInterfaces.length > 0){
+            return Proxy.newProxyInstance(new ProxyClassLoader()
+                    , allInterfaces, new Plugin(target, interceptor, pluginMethod));
+        }
+        return target;
+    }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -49,6 +53,21 @@ public class Plugin implements InvocationHandler {
         }
         return method.invoke(target, args);
     }
+
+
+    private static Class<?>[] getAllInterfaces(Class clazz, Map<Class<?>, Set<Method>> pluginMethod) {
+        Set<Class<?>> interfaces = new HashSet<>();
+        while (clazz != null){
+            for (Class anInterface : clazz.getInterfaces()) {
+                if(pluginMethod.containsKey(anInterface)){
+                    interfaces.add(anInterface);
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return interfaces.toArray(new Class<?>[0]);
+    }
+
 
     private static Map<Class<?>, Set<Method>> getPluginMethod(Interceptor interceptor) {
         Intercepts intercepts = interceptor.getClass().getAnnotation(Intercepts.class);

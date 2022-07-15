@@ -1,6 +1,7 @@
 package org.cjl.summer.mybatis.executor;
 
 import org.cjl.summer.mybatis.cache.CacheKey;
+import org.cjl.summer.mybatis.session.Configuration;
 
 import java.sql.SQLException;
 import java.util.HashMap;

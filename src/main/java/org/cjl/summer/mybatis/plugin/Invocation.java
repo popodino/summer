@@ -34,6 +34,10 @@ public class Invocation {
         return args;
     }
 
+    public void setArgs(Object[] args){
+        this.args = args;
+    }
+
     public Object process() throws InvocationTargetException, IllegalAccessException {
         return this.method.invoke(target,args);
     }

@@ -1,5 +1,7 @@
 package org.cjl.summer.mybatis.executor.parameter;
 
+import java.sql.PreparedStatement;
+
 /**
  * @Title: ParameterHandler
  * @Package: org.cjl.summer.mybatis.executor.parameter
@@ -9,5 +11,5 @@ package org.cjl.summer.mybatis.executor.parameter;
  * @Version: V1.0
  */
 public interface ParameterHandler {
-    public void setParameter(Object[] parameters);
+    public PreparedStatement setParameter(PreparedStatement preparedStatement, Object[] parameters);
 }

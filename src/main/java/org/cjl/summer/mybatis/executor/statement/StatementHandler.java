@@ -1,5 +1,6 @@
 package org.cjl.summer.mybatis.executor.statement;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,4 +14,5 @@ import java.util.List;
  */
 public interface StatementHandler {
     public <T> List<T> query(String statement, Object[] parameters, Class resultType) throws SQLException;
+
 }

@@ -1,6 +1,8 @@
 package org.cjl.summer.mybatis.executor;
 
 import org.cjl.summer.mybatis.executor.statement.SimpleStatementHandler;
+import org.cjl.summer.mybatis.executor.statement.StatementHandler;
+import org.cjl.summer.mybatis.session.Configuration;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -14,10 +16,17 @@ import java.util.List;
  * @Version: V1.0
  */
 public class SimpleExecutor implements Executor {
+
+    private Configuration configuration;
+
+    public SimpleExecutor(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
     @Override
     public <T> List<T> query(String statement, Object[] parameter, Class resultType) throws SQLException {
-        SimpleStatementHandler simpleStatementHandler = new SimpleStatementHandler();
-        return simpleStatementHandler.query(statement,parameter,resultType);
+        StatementHandler statementHandler = configuration.newStatementHandler();
+        return statementHandler.query(statement,parameter,resultType);
     }
 
     @Override

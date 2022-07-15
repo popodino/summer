@@ -7,13 +7,20 @@ import org.cjl.summer.mybatis.annotation.Select;
 import org.cjl.summer.mybatis.binding.MapperRegister;
 import org.cjl.summer.mybatis.executor.CachingExecutor;
 import org.cjl.summer.mybatis.executor.Executor;
+import org.cjl.summer.mybatis.executor.ResultSet.ResultSetHandler;
+import org.cjl.summer.mybatis.executor.ResultSet.SimpleResultSetHandler;
 import org.cjl.summer.mybatis.executor.SimpleExecutor;
+import org.cjl.summer.mybatis.executor.parameter.ParameterHandler;
+import org.cjl.summer.mybatis.executor.parameter.SimpleParameterHandler;
+import org.cjl.summer.mybatis.executor.statement.SimpleStatementHandler;
+import org.cjl.summer.mybatis.executor.statement.StatementHandler;
 import org.cjl.summer.mybatis.plugin.Interceptor;
 import org.cjl.summer.mybatis.plugin.InterceptorChain;
 import org.cjl.summer.summermvc.beans.BeanWrapper;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,17 +51,27 @@ public class Configuration {
     }
 
     public Executor newExecutor() {
-        Executor executor = null;
+        Executor executor = new SimpleExecutor(this);
         if ("true".equals(PROPERTIES.getString("cache.enabled"))) {
-            executor = new CachingExecutor(new SimpleExecutor());
-        } else {
-            executor = new SimpleExecutor();
+            executor = new CachingExecutor(executor);
         }
+        return (Executor) interceptorChain.pluginAll(executor);
+    }
 
-        if (interceptorChain.hasPlugin()) {
-            return (Executor) interceptorChain.pluginAll(executor);
-        }
-        return executor;
+    public ParameterHandler newParameterHandler() {
+        ParameterHandler parameterHandler = new SimpleParameterHandler();
+        return (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
+
+    }
+
+    public StatementHandler newStatementHandler() {
+        StatementHandler statementHandler = new SimpleStatementHandler(this);
+        return (StatementHandler) interceptorChain.pluginAll(statementHandler);
+    }
+
+    public ResultSetHandler newResultHandler() {
+        ResultSetHandler resultSetHandler = new SimpleResultSetHandler();
+        return (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
     }
 
     private void initPlugin() {

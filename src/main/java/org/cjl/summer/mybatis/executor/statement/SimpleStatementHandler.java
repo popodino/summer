@@ -1,6 +1,8 @@
 package org.cjl.summer.mybatis.executor.statement;
 
+import org.cjl.summer.mybatis.executor.ResultSet.ResultSetHandler;
 import org.cjl.summer.mybatis.executor.ResultSet.SimpleResultSetHandler;
+import org.cjl.summer.mybatis.executor.parameter.ParameterHandler;
 import org.cjl.summer.mybatis.executor.parameter.SimpleParameterHandler;
 import org.cjl.summer.mybatis.session.Configuration;
 
@@ -19,7 +21,17 @@ import java.util.List;
  * @Version: V1.0
  */
 public class SimpleStatementHandler implements StatementHandler {
-    private SimpleResultSetHandler simpleResultSetHandler = new SimpleResultSetHandler();
+
+    private Configuration configuration;
+
+    private  ParameterHandler parameterHandler;
+    private ResultSetHandler resultSetHandler;
+
+    public SimpleStatementHandler(Configuration configuration) {
+        this.configuration = configuration;
+        this.resultSetHandler = configuration.newResultHandler();
+        this.parameterHandler = configuration.newParameterHandler();
+    }
 
     public <T> List<T> query(String statement, Object[] parameters, Class resultType) throws SQLException {
         Connection connection = null;
@@ -29,20 +41,21 @@ public class SimpleStatementHandler implements StatementHandler {
         try {
             connection = getConnection();
             preparedStatement = connection.prepareStatement(statement);
-            new SimpleParameterHandler(preparedStatement).setParameter(parameters);
+            preparedStatement = parameterHandler.setParameter(preparedStatement, parameters);
             preparedStatement.execute();
 
-            result = simpleResultSetHandler.handle(preparedStatement.getResultSet(),resultType);
+            result = resultSetHandler.handle(preparedStatement.getResultSet(), resultType);
 
             return result;
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            if(null != preparedStatement){
+            if (null != preparedStatement) {
                 preparedStatement.close();
             }
-            if(null != connection){
+            if (null != connection) {
                 connection.close();
             }
         }
@@ -56,7 +69,7 @@ public class SimpleStatementHandler implements StatementHandler {
         Connection connection = null;
         try {
             Class.forName(driver);
-            connection = DriverManager.getConnection(url,username,password);
+            connection = DriverManager.getConnection(url, username, password);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

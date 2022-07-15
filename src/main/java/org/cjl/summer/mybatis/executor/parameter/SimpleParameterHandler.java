@@ -11,16 +11,10 @@ import java.sql.PreparedStatement;
  * @Version: V1.0
  */
 public class SimpleParameterHandler implements ParameterHandler {
-    private PreparedStatement preparedStatement;
-
-    public SimpleParameterHandler(PreparedStatement preparedStatement) {
-        this.preparedStatement = preparedStatement;
-    }
 
     @Override
-    public void setParameter(Object[] parameters) {
+    public PreparedStatement setParameter(PreparedStatement preparedStatement, Object[] parameters) {
         try {
-
             for (int i = 0; i < parameters.length; i++) {
                 int k = i + 1;
                 if (parameters[i] instanceof Integer) {
@@ -35,9 +29,10 @@ public class SimpleParameterHandler implements ParameterHandler {
                     preparedStatement.setString(k, String.valueOf(parameters[i]));
                 }
             }
-
+            return preparedStatement;
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

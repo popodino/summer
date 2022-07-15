@@ -32,7 +32,6 @@ public class SimpleResultSetHandler implements ResultSetHandler {
     @Override
     public <T> List<T> handle(ResultSet resultSet, Class resultType){
         List<Object> resultList = new ArrayList<>();
-
         try {
             while (resultSet.next()){
                 Object obj = null;
