@@ -27,7 +27,8 @@ public class TestSummerBoot {
     }
 
     @GetMapping("/city")
-    public String test(@RequestParam("id") String id) throws Exception {
-        return testService.getCityById(id).toString();
+    public City test(@RequestParam("id") String id) throws Exception {
+        City city = testService.getCityById(id);
+        return city;
     }
 }

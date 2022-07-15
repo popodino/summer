@@ -61,7 +61,7 @@ public class DispatchServlet extends Servlet {
         HandlerAdapter handlerAdapter = handlerAdapters.get(handlerMapping);
 
         Object result = handlerAdapter.handle(request, response, handlerMapping);
-        response.write(result.toString());
+        response.write(result == null ? "" : result.toString());
     }
 
     private HandlerMapping getHandlerMapping(Request request) {

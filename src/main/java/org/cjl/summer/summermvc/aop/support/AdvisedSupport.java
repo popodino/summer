@@ -68,10 +68,6 @@ public class AdvisedSupport {
                     if (null != aopAspect.getAspectAfter()) {
                         advices.add(new MethodAfterAdviceInterceptor(aopAspect.getAspectAfter(), aopAspect.getAspectInstance()));
                     }
-                    //Around
-                    if (null != aopAspect.getAspectAround()) {
-                        advices.add(new MethodAroundAdviceInterceptor(aopAspect.getAspectAround(), aopAspect.getAspectInstance()));
-                    }
 
                     methodCache.put(method, advices);
                 }

@@ -3,6 +3,9 @@ package org.cjl.summer;
 import org.cjl.summer.summermvc.annotation.*;
 import org.cjl.summer.summermvc.aop.aspect.JoinPoint;
 
+import java.util.Arrays;
+import java.util.Date;
+
 /**
  * @Title: TestAspect
  * @Package: org.cjl.summer
@@ -17,23 +20,31 @@ public class TestAspect {
     @PointCut("public .* org.cjl.summer.*Service.*(.*)")
     public void pointCut(){}
 
-    @Before
+    //@Before
     public Object before(JoinPoint joinPoint) throws Throwable{
 
-        System.out.println("============before============" + joinPoint.getArguments()[0].toString());
+        System.out.println("[Info] [Before] actionName: " + joinPoint.getMethod().getName() + " , args: "+ Arrays.toString(joinPoint.getArguments()));
         return joinPoint.process();
     }
 
-    @After
+    //@After
     public Object after(JoinPoint joinPoint) throws Throwable{
-        System.out.println("============After============" + joinPoint.getArguments()[0].toString());
+        System.out.println("[Info] [After] actionName: " + joinPoint.getMethod().getName() + " , args: "+ Arrays.toString(joinPoint.getArguments()));
         return joinPoint.process();
     }
 
     @Around
     public Object around(JoinPoint joinPoint) throws Throwable{
-        System.out.println("============Around============"+ joinPoint.getArguments()[0].toString());
-        return joinPoint.process();
+        long startTime = System.currentTimeMillis();
+//        System.out.println("[Info] [Around] actionName: " + joinPoint.getMethod().getName()
+//                + " , args: "+ Arrays.toString(joinPoint.getArguments()));
+        Object obj = joinPoint.process();
+        long endTime = System.currentTimeMillis();
+        System.out.println("[Info] [Around] actionName: " + joinPoint.getMethod().getName()
+                + " , args: "+ Arrays.toString(joinPoint.getArguments())
+                + " , timeSpend: " + (endTime - startTime) + "ms"
+                + " , result: " + obj.toString());
+        return obj;
     }
 
     @AfterThrowing

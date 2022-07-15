@@ -2,25 +2,24 @@ package org.cjl.summer.mybatis.session;
 
 import org.cjl.summer.mybatis.annotation.Intercepts;
 import org.cjl.summer.mybatis.annotation.Mapper;
-import org.cjl.summer.mybatis.annotation.ResultType;
 import org.cjl.summer.mybatis.annotation.Select;
 import org.cjl.summer.mybatis.binding.MapperRegister;
 import org.cjl.summer.mybatis.executor.CachingExecutor;
 import org.cjl.summer.mybatis.executor.Executor;
-import org.cjl.summer.mybatis.executor.ResultSet.ResultSetHandler;
-import org.cjl.summer.mybatis.executor.ResultSet.SimpleResultSetHandler;
+import org.cjl.summer.mybatis.executor.resultset.ResultSetHandler;
+import org.cjl.summer.mybatis.executor.resultset.SimpleResultSetHandler;
 import org.cjl.summer.mybatis.executor.SimpleExecutor;
 import org.cjl.summer.mybatis.executor.parameter.ParameterHandler;
 import org.cjl.summer.mybatis.executor.parameter.SimpleParameterHandler;
 import org.cjl.summer.mybatis.executor.statement.SimpleStatementHandler;
 import org.cjl.summer.mybatis.executor.statement.StatementHandler;
+import org.cjl.summer.mybatis.executor.statement.cache.StatementCache;
 import org.cjl.summer.mybatis.plugin.Interceptor;
 import org.cjl.summer.mybatis.plugin.InterceptorChain;
 import org.cjl.summer.summermvc.beans.BeanWrapper;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +51,7 @@ public class Configuration {
 
     public Executor newExecutor() {
         Executor executor = new SimpleExecutor(this);
-        if ("true".equals(PROPERTIES.getString("cache.enabled"))) {
+        if (PROPERTIES.containsKey("cache.enabled") && "true".equals(PROPERTIES.getString("cache.enabled"))) {
             executor = new CachingExecutor(executor);
         }
         return (Executor) interceptorChain.pluginAll(executor);
@@ -119,6 +118,8 @@ public class Configuration {
             }
 
         }
+
+        StatementCache.getInstance().registryStatements(mappedStatements);
     }
 
     private void scanPackage(String mapperScan) {

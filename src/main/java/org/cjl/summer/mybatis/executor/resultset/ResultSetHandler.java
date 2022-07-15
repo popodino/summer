@@ -1,4 +1,4 @@
-package org.cjl.summer.mybatis.executor.ResultSet;
+package org.cjl.summer.mybatis.executor.resultset;
 
 import java.sql.ResultSet;
 import java.util.List;
