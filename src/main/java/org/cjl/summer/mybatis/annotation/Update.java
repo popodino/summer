@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * @Title: MappingScan
  * @Package: org.cjl.summer.mybatis.annotation
- * @Description: mock the mybatis select annotation
+ * @Description: mock the mybatis update annotation
  * @Author: Jiulong_Chen
  * @Date: 7/13/2022
  * @Version: V1.0
@@ -14,6 +14,6 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Select {
-    String query();
+public @interface Update {
+    String update();
 }

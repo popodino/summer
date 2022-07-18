@@ -31,6 +31,7 @@ public class SimpleExecutor implements Executor {
 
     @Override
     public int update(String statement, Object[] parameter) throws SQLException {
-        return 0;
+        StatementHandler statementHandler = configuration.newStatementHandler();
+        return statementHandler.update(statement,parameter);
     }
 }

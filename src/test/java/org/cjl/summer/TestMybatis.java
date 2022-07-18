@@ -20,7 +20,7 @@ public class TestMybatis {
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactory("org.cjl.summer");
         DefaultSqlSession sqlSession = sqlSessionFactory.openSqlSession();
         TestMapper testMapper = sqlSession.getMapper(TestMapper.class);
-        String name = testMapper.getName("110000");
+        String name = testMapper.getName(110000);
 
         System.out.println(" --- " + name);
     }

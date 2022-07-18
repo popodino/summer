@@ -15,4 +15,6 @@ import java.util.List;
 public interface StatementHandler {
     public <T> List<T> query(String statement, Object[] parameters, Class resultType) throws SQLException;
 
+    public int update(String statement, Object[] parameters) throws SQLException;
+
 }

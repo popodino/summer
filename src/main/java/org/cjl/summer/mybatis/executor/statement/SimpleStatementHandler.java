@@ -36,11 +36,25 @@ public class SimpleStatementHandler implements StatementHandler {
 
             PreparedStatement preparedStatement = StatementCache.getPrepareStatement(statement);
             preparedStatement = parameterHandler.setParameter(preparedStatement, parameters);
-            preparedStatement.execute();
+            preparedStatement.executeQuery();
             ResultSet resultSet = preparedStatement.getResultSet();
             result = resultSetHandler.handle(resultSet, resultType);
             resultSet.close();
             return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public int update(String statement, Object[] parameters) throws SQLException {
+        try {
+            PreparedStatement preparedStatement = StatementCache.getPrepareStatement(statement);
+            preparedStatement = parameterHandler.setParameter(preparedStatement, parameters);
+
+            return preparedStatement.executeUpdate();
 
         } catch (Exception e) {
             e.printStackTrace();

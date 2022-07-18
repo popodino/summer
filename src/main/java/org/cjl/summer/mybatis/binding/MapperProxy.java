@@ -2,6 +2,8 @@ package org.cjl.summer.mybatis.binding;
 
 import org.cjl.summer.jdkproxy.InvocationHandler;
 import org.cjl.summer.mybatis.annotation.ResultType;
+import org.cjl.summer.mybatis.annotation.Select;
+import org.cjl.summer.mybatis.annotation.Update;
 import org.cjl.summer.mybatis.session.DefaultSqlSession;
 
 import java.lang.reflect.Method;
@@ -18,7 +20,8 @@ import java.util.Map;
  */
 public class MapperProxy implements InvocationHandler {
 
-   private DefaultSqlSession sqlSession;
+    private DefaultSqlSession sqlSession;
+
     public MapperProxy(DefaultSqlSession sqlSession) {
         this.sqlSession = sqlSession;
     }
@@ -27,17 +30,22 @@ public class MapperProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         Class<?> resultType = method.getReturnType();
-        if(method.isAnnotationPresent(ResultType.class)){
+        if (method.isAnnotationPresent(ResultType.class)) {
             resultType = method.getAnnotation(ResultType.class).type();
         }
-        String statementId = method.getDeclaringClass().getName() + "."+method.getName();
-        if(sqlSession.getConfiguration().hasStatement(statementId)){
-            if(method.getReturnType() == List.class){
-                return sqlSession.selectList(statementId, args,resultType);
-            }else{
-                return sqlSession.selectOne(statementId, args,resultType);
+        String statementId = method.getDeclaringClass().getName() + "." + method.getName();
+        if (sqlSession.getConfiguration().hasStatement(statementId)) {
+
+            if (method.isAnnotationPresent(Select.class)) {
+                if (method.getReturnType() == List.class) {
+                    return sqlSession.selectList(statementId, args, resultType);
+                } else {
+                    return sqlSession.selectOne(statementId, args, resultType);
+                }
+            } else if (method.isAnnotationPresent(Update.class)) {
+                return sqlSession.update(statementId, args);
             }
         }
-        return method.invoke(proxy,args);
+        return method.invoke(proxy, args);
     }
 }

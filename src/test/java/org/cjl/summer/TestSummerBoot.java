@@ -28,19 +28,19 @@ public class TestSummerBoot {
     }
 
     @GetMapping("/city")
-    public City test(@RequestParam("id") String id) throws Exception {
+    public City test(@RequestParam("id") int id) throws Exception {
         City city = testService.getCityById(id);
         return city;
     }
 
-    @PostMapping("/city/post")
-    public City testPost(City city){
-        city.setName("ojbk");
-       return city;
+    @PostMapping("/city/update")
+    public City testPost(City city) throws Exception {
+        testService.updateCityName(city);
+       return testService.getCityById(city.getId());
     }
 
     @GetMapping("/city/{id}/check")
-    public City testPath(@PathVariable("id") String id, @RequestParam("pinyin") String pinyin) throws Exception {
+    public City testPath(@PathVariable("id") int id, @RequestParam("pinyin") String pinyin) throws Exception {
         City city = testService.getCityById(id);
         if(city == null || !city.getPinyin().equalsIgnoreCase(pinyin)){
             return null;

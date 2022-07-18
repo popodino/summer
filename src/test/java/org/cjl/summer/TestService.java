@@ -9,6 +9,8 @@ package org.cjl.summer;
  * @Version: V1.0
  */
 public interface TestService {
-    City getCityById(String Id) throws Exception;
+    City getCityById(Integer Id) throws Exception;
+
+    int updateCityName(City city);
 
 }

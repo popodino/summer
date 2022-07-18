@@ -110,7 +110,7 @@ public class Proxy {
                 for (int i = 0; i < paramTypes.length; i++) {
                     Class clazz = paramTypes[i];
                     String type = clazz.getTypeName();
-                    String paramName = toLowerFirstCase(clazz.getSimpleName());
+                    String paramName = toLowerFirstCase(clazz.getSimpleName()) + i;
 
                     paramNames.append(type + " " + paramName);
                     paramValues.append(paramName);
@@ -140,18 +140,15 @@ public class Proxy {
 
         code.append("}");
 
-        //System.out.println(code.toString());
-        //System.out.println("=================================");
+//        System.out.println(code.toString());
+//        System.out.println("=================================");
         return code.toString();
     }
 
     private static String toLowerFirstCase(String str) {
         str = str.replace("[]", "");
-        char[] chars = str.toCharArray();
-        chars[0] += 32;
-        str = String.valueOf(chars);
-
-        return "class".equals(str) ? "clazz" : str;
+        String firstCase = str.substring(0,1).toLowerCase();
+        return firstCase + str.substring(1,str.length());
     }
 
     private static String getReturnEmptyCode(Class<?> returnClass) {

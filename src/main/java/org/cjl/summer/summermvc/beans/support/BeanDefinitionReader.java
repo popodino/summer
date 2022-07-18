@@ -109,8 +109,7 @@ public class BeanDefinitionReader {
     }
 
     private String toLowerFirstCase(String str){
-        char[] chars = str.toCharArray();
-        chars[0] += 32;
-        return String.valueOf(chars);
+        String firstCase = str.substring(0,1).toLowerCase();
+        return firstCase + str.substring(1,str.length());
     }
 }

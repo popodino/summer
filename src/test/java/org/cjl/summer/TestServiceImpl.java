@@ -18,8 +18,13 @@ public class TestServiceImpl implements TestService {
     TestMapper testMapper;
 
     @Override
-    public City getCityById(String id) throws Exception {
+    public City getCityById(Integer id) throws Exception {
         //throw new Exception("--eerrrroorr--");
         return testMapper.getCityById(id);
+    }
+
+    @Override
+    public int updateCityName(City city) {
+        return testMapper.updateCity(city.getName(), city.getId());
     }
 }

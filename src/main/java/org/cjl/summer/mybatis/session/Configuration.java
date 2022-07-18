@@ -3,6 +3,7 @@ package org.cjl.summer.mybatis.session;
 import org.cjl.summer.mybatis.annotation.Intercepts;
 import org.cjl.summer.mybatis.annotation.Mapper;
 import org.cjl.summer.mybatis.annotation.Select;
+import org.cjl.summer.mybatis.annotation.Update;
 import org.cjl.summer.mybatis.binding.MapperRegister;
 import org.cjl.summer.mybatis.executor.CachingExecutor;
 import org.cjl.summer.mybatis.executor.Executor;
@@ -113,6 +114,9 @@ public class Configuration {
                 String statementName = clazz.getName() + "." + method.getName();
                 if (!mappedStatements.containsKey(statementName) && method.isAnnotationPresent(Select.class)) {
                     String statement = method.getAnnotation(Select.class).query();
+                    mappedStatements.put(statementName, statement);
+                } else if(!mappedStatements.containsKey(statementName) && method.isAnnotationPresent(Update.class)){
+                    String statement = method.getAnnotation(Update.class).update();
                     mappedStatements.put(statementName, statement);
                 }
             }

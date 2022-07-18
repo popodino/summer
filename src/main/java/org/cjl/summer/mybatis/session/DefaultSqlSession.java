@@ -31,16 +31,22 @@ public class DefaultSqlSession {
         return configuration.getMapper(clazz, this);
     }
 
-    public <T> T selectOne(String statement, Object[] parameters,Class resultType) throws SQLException {
+    public <T> T selectOne(String statement, Object[] parameters, Class resultType) throws SQLException {
         String sql = configuration.getStatement(statement);
-        sql = (null == sql || "".equals(sql)) ? statement:sql;
-        List<T> resultList =  executor.query(sql,parameters,resultType);
-        return (null != resultList && !resultList.isEmpty()) ? resultList.get(0):null;
+        sql = (null == sql || "".equals(sql)) ? statement : sql;
+        List<T> resultList = executor.query(sql, parameters, resultType);
+        return (null != resultList && !resultList.isEmpty()) ? resultList.get(0) : null;
     }
 
     public <T> List<T> selectList(String statement, Object[] parameters, Class resultType) throws SQLException {
         String sql = configuration.getStatement(statement);
-        sql = (null == sql || "".equals(sql)) ? statement:sql;
-        return executor.query(sql,parameters,resultType);
+        sql = (null == sql || "".equals(sql)) ? statement : sql;
+        return executor.query(sql, parameters, resultType);
+    }
+
+    public int update(String statement, Object[] parameters) throws SQLException {
+        String sql = configuration.getStatement(statement);
+        sql = (null == sql || "".equals(sql)) ? statement : sql;
+        return executor.update(sql, parameters);
     }
 }

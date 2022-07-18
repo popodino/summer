@@ -44,7 +44,7 @@ public class CachingExecutor implements Executor {
 
     @Override
     public int update(String statement, Object[] parameter) throws SQLException {
-        return 0;
+        return delegate.update(statement,parameter);
     }
 
     public String joinStr(Object[] objs) {

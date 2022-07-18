@@ -110,9 +110,14 @@ public class HandlerAdapter {
     private Object caseRequestValue(String value, Class<?> parameterType) {
         if (String.class == parameterType) {
             return value;
-        }
-        if (Integer.class == parameterType) {
+        } else if (Integer.class == parameterType || int.class == parameterType) {
             return Integer.valueOf(value);
+        } else if (Double.class == parameterType || double.class == parameterType) {
+            return Double.valueOf(value);
+        } else if (Float.class == parameterType || float.class == parameterType) {
+            return Float.valueOf(value);
+        } else if (Boolean.class == parameterType || boolean.class == parameterType) {
+            return Boolean.valueOf(value);
         } else {
             return value;
         }
