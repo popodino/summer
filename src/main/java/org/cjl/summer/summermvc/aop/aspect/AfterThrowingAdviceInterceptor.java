@@ -28,7 +28,7 @@ public class AfterThrowingAdviceInterceptor extends AbstractAspectAdvice impleme
         this.joinPoint = invocation;
 
         try {
-            return invocation.process();
+            return invocation.proceed();
         } catch (Throwable e) {
              afterThrowing(e);
              throw e;

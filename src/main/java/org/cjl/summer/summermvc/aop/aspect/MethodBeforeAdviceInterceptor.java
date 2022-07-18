@@ -27,7 +27,7 @@ public class MethodBeforeAdviceInterceptor extends AbstractAspectAdvice implemen
         this.joinPoint = invocation;
         if(invocation.getMethod().getReturnType() == Void.class){
             before();
-            return invocation.process();
+            return invocation.proceed();
         }else {
             return before();
         }

@@ -27,6 +27,6 @@ public class TestParameterHandlerPlugin implements Interceptor {
         System.out.println("[Info] --parameterHandlerPlugin-- parameter(after)：" + Arrays.toString(newParam));
         invocation.getArgs()[1] = newParam;
 
-        return invocation.process();
+        return invocation.proceed();
     }
 }

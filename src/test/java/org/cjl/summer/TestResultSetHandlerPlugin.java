@@ -23,6 +23,6 @@ public class TestResultSetHandlerPlugin implements Interceptor {
         Class resultType = (Class) invocation.getArgs()[1];
         System.out.println("[Info] --resultSetHandlerPlugin-- metaData：" + resultSet.getMetaData().toString());
         System.out.println("[Info] --resultSetHandlerPlugin-- resultType：" + resultType.getName());
-        return invocation.process();
+        return invocation.proceed();
     }
 }

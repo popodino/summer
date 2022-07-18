@@ -25,6 +25,6 @@ public class TestExecutorPlugin implements Interceptor {
         System.out.println("[Info] --executorPlugin-- statement：" + statement);
         System.out.println("[Info] --executorPlugin-- parameter：" + Arrays.toString(parameter));
         System.out.println("[Info] --executorPlugin-- resultType：" + pojo.getName());
-        return invocation.process();
+        return invocation.proceed();
     }
 }

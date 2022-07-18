@@ -26,6 +26,6 @@ public class TestStatementHandlerPlugin implements Interceptor {
         System.out.println("[Info] --statementHandlerPlugin-- statement：" + statement);
         System.out.println("[Info] --statementHandlerPlugin-- parameter：" + Arrays.toString(parameter));
         System.out.println("[Info] --statementHandlerPlugin-- resultType：" + pojo.getName());
-        return invocation.process();
+        return invocation.proceed();
     }
 }

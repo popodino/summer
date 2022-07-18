@@ -1,6 +1,5 @@
 package org.cjl.summer;
 
-import com.mysql.cj.xdevapi.JsonParser;
 import org.cjl.summer.mybatis.annotation.MapperScan;
 import org.cjl.summer.summermvc.annotation.*;
 import org.cjl.summer.tomcat.SummerBoot;

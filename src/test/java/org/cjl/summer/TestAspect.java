@@ -24,13 +24,13 @@ public class TestAspect {
     public Object before(JoinPoint joinPoint) throws Throwable{
 
         System.out.println("[Info] [Before] actionName: " + joinPoint.getMethod().getName() + " , args: "+ Arrays.toString(joinPoint.getArguments()));
-        return joinPoint.process();
+        return joinPoint.proceed();
     }
 
     //@After
     public Object after(JoinPoint joinPoint) throws Throwable{
         System.out.println("[Info] [After] actionName: " + joinPoint.getMethod().getName() + " , args: "+ Arrays.toString(joinPoint.getArguments()));
-        return joinPoint.process();
+        return joinPoint.proceed();
     }
 
     @Around
@@ -38,7 +38,7 @@ public class TestAspect {
         long startTime = System.currentTimeMillis();
 //        System.out.println("[Info] [Around] actionName: " + joinPoint.getMethod().getName()
 //                + " , args: "+ Arrays.toString(joinPoint.getArguments()));
-        Object obj = joinPoint.process();
+        Object obj = joinPoint.proceed();
         long endTime = System.currentTimeMillis();
         System.out.println("[Info] [Around] actionName: " + joinPoint.getMethod().getName()
                 + " , args: "+ Arrays.toString(joinPoint.getArguments())
@@ -51,6 +51,6 @@ public class TestAspect {
     public Object afterThrowing(JoinPoint joinPoint,Throwable e) throws Throwable{
         System.out.println("============afterThrowing============"+ joinPoint.getArguments()[0].toString()
                 + "-----" + e.getMessage());
-        return joinPoint.process();
+        return joinPoint.proceed();
     }
 }

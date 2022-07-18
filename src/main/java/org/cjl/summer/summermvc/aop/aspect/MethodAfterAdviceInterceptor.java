@@ -26,7 +26,7 @@ public class MethodAfterAdviceInterceptor extends AbstractAspectAdvice implement
     public Object invoke(MethodInvocation invocation) throws Exception {
         this.joinPoint = invocation;
         if(invocation.getMethod().getReturnType() == Void.class){
-            Object obj = invocation.process();
+            Object obj = invocation.proceed();
             after();
             return obj;
         }else {
