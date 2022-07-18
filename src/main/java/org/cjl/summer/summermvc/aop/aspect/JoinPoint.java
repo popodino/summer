@@ -17,5 +17,5 @@ public interface JoinPoint {
 
     Method getMethod();
 
-    Object process() throws Exception;
+    Object proceed() throws Exception;
 }

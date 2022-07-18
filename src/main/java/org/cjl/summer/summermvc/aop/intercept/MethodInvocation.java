@@ -35,7 +35,7 @@ public class MethodInvocation implements JoinPoint {
     }
 
     @Override
-    public Object process() throws Exception {
+    public Object proceed() throws Exception {
         if(this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() -1){
 
             return this.method.invoke(this.target, this.args);
@@ -47,7 +47,7 @@ public class MethodInvocation implements JoinPoint {
             MethodInterceptor interceptor = (MethodInterceptor) interceptorOrInterceptionAdvice;
             return interceptor.invoke(this);
         }else {
-            return process();
+            return proceed();
         }
     }
 
