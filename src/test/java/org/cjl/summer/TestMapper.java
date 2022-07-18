@@ -21,7 +21,7 @@ public interface TestMapper {
     //@ResultType(type = int.class)
     public String getName(String id);
 
-    @Select(query = "select id,name from t_city where id = ?")
+    @Select(query = "select id,name,pinyin from t_city where id = ?")
     @ResultType(type = City.class)
     public City getCityById(String id);
 }

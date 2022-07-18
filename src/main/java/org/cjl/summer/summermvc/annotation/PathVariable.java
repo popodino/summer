@@ -15,6 +15,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface PathVariable {
-    String value() default "";
+    String value();
     boolean require() default true;
 }

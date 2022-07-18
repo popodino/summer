@@ -1,6 +1,7 @@
 package org.cjl.summer.summermvc.mvc;
 
 import com.alibaba.fastjson.JSON;
+import org.cjl.summer.summermvc.annotation.PathVariable;
 import org.cjl.summer.summermvc.annotation.RequestParam;
 import org.cjl.summer.tomcat.Request;
 import org.cjl.summer.tomcat.Response;
@@ -33,6 +34,7 @@ public class HandlerAdapter {
         defalutDataClassList.add(float.class);
         defalutDataClassList.add(double.class);
     }
+
     public boolean supports(Object handler) {
         return (handler instanceof HandlerMapping);
     }
@@ -43,6 +45,10 @@ public class HandlerAdapter {
         if (!request.getMethod().equals(handlerMapping.getMethodType())) {
             throw new RuntimeException("method not allowed!");
         }
+
+        Class<?>[] parameterTypes = handlerMapping.getMethod().getParameterTypes();
+
+        Object[] paramValues = new Object[parameterTypes.length];
 
         Map<String, Integer> paramIndexMapping = new HashMap<>();
 
@@ -60,16 +66,20 @@ public class HandlerAdapter {
                     if (!"".equals(paramName)) {
                         paramIndexMapping.put(paramName, i);
                     }
+                } else if (annotation instanceof PathVariable) {
+                    String paramName = ((PathVariable) annotation).value();
+                    boolean require = ((PathVariable) annotation).require();
+                    int index = handlerMapping.getPathVariableIndex(paramName);
+                    if (require && (index < 0 || request.getPathVariable().length < (index + 1)
+                            || "".equals(request.getPathVariable()[index]))) {
+                        throw new RuntimeException("pathVariable " + paramName + " not found!");
+                    }
+                    paramValues[i] = request.getPathVariable()[index];
                 }
             }
         }
 
-        Class<?>[] parameterTypes = handlerMapping.getMethod().getParameterTypes();
-
-
         Map<String, String[]> parameterMap = request.getParameterMap();
-
-        Object[] paramValues = new Object[parameterTypes.length];
 
         parameterMap.forEach((key, value) -> {
             if (paramIndexMapping.containsKey(key)) {
@@ -82,10 +92,10 @@ public class HandlerAdapter {
             Class<?> type = parameterTypes[i];
             if (type == Request.class) {
                 paramValues[i] = request;
-            }else if (type == Response.class) {
+            } else if (type == Response.class) {
                 paramValues[i] = response;
             } else if (!defalutDataClassList.contains(type)) {
-                paramValues[i] = JSON.parseObject(request.getRequestBody(),type);
+                paramValues[i] = JSON.parseObject(request.getRequestBody(), type);
             }
         }
 

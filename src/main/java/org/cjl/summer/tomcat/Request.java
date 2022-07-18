@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -22,6 +23,8 @@ public class Request {
 
     private String requestBody = "";
 
+    private String[] pathVariable;
+
     private Map<String, List<String>> parameters = new HashMap<>();
     private Map<String, String[]> parameterMap = new HashMap<>();
 
@@ -35,6 +38,8 @@ public class Request {
             if ((len = in.read(buff)) > 0) {
                 content = new String(buff, 0, len);
             }
+
+            content = new String(content.getBytes(),"utf-8");
 
             String line = content.split("\\n")[0];
             String[] header = line.split(" ");
@@ -57,7 +62,10 @@ public class Request {
                 parameters.forEach((key, value) -> {
                     parameterMap.put(key, value.toArray(new String[0]));
                 });
+                pathVariable = uri.replace(contextPath, "").replaceFirst("/", "").split("/");
 
+            } else {
+                pathVariable = uri.replaceFirst("/", "").split("/");
             }
 
             BufferedReader bufferedReader = new BufferedReader(new StringReader(content));
@@ -92,6 +100,9 @@ public class Request {
 
     public String getContextPath() {
         return this.contextPath;
+    }
+    public String[] getPathVariable() {
+        return this.pathVariable;
     }
 
     public String getParameter(String name) {

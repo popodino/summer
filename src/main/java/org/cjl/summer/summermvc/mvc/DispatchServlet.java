@@ -47,7 +47,6 @@ public class DispatchServlet extends Servlet {
         try {
             doDispatch(request, response);
         } catch (Exception e) {
-            e.printStackTrace();
             response.write("500  " + e.getMessage());
         }
     }
@@ -146,10 +145,12 @@ public class DispatchServlet extends Servlet {
                             continue;
                         }
 
+
                         String regex = ("/" + baseURL + "/" + methodUrl.replaceAll("\\*", ".*"))
                                 .replaceAll("/+", "/");
-                        Pattern pattern = Pattern.compile(regex);
-                        HandlerMapping handlerMapping = new HandlerMapping(applicationContext.getBean(beanName), method, methodType, pattern);
+                        Pattern pattern = Pattern.compile(regex.replaceAll("\\{([^}]*)\\}",".*"));
+                        HandlerMapping handlerMapping = new HandlerMapping(applicationContext.getBean(beanName), method, methodType, pattern
+                                ,regex.replaceFirst("/","").split("/"));
                         handlerMappings.add(handlerMapping);
                         System.out.println("[Info] Mapped: " + methodType + " --> " + regex + " --> " + method);
 

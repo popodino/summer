@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import org.cjl.summer.mybatis.session.DefaultSqlSession;
 import org.cjl.summer.mybatis.session.SqlSessionFactory;
 
+import java.util.regex.Pattern;
+
 /**
  * @Title: TestMybatis
  * @Package: org.cjl.summer

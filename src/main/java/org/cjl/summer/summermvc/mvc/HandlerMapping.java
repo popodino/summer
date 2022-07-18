@@ -14,15 +14,17 @@ import java.util.regex.Pattern;
 public class HandlerMapping {
     private Object controller;
     private Method method;
-
     private String methodType;
     private Pattern pattern;
 
-    public HandlerMapping(Object controller, Method method, String methodType, Pattern pattern) {
+    private String[] pathVariables;
+
+    public HandlerMapping(Object controller, Method method, String methodType, Pattern pattern, String[] pathVariables) {
         this.controller = controller;
         this.method = method;
         this.methodType = methodType;
         this.pattern = pattern;
+        this.pathVariables = pathVariables;
     }
 
     public Object getController() {
@@ -55,5 +57,14 @@ public class HandlerMapping {
 
     public void setMethodType(String methodType) {
         this.methodType = methodType;
+    }
+
+    public int getPathVariableIndex(String pathVariable) {
+        for (int i = 0; i < pathVariables.length; i++) {
+            if (pathVariables[i].equalsIgnoreCase("{" + pathVariable + "}")) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

@@ -38,4 +38,13 @@ public class TestSummerBoot {
         city.setName("ojbk");
        return city;
     }
+
+    @GetMapping("/city/{id}/check")
+    public City testPath(@PathVariable("id") String id, @RequestParam("pinyin") String pinyin) throws Exception {
+        City city = testService.getCityById(id);
+        if(city == null || !city.getPinyin().equalsIgnoreCase(pinyin)){
+            return null;
+        }
+        return city;
+    }
 }

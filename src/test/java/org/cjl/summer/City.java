@@ -12,6 +12,8 @@ public class City {
     private int id;
     private String name;
 
+    private String pinyin;
+
     public int getId() {
         return id;
     }
@@ -28,11 +30,21 @@ public class City {
         this.name = name;
     }
 
+    public String getPinyin() {
+        return pinyin;
+    }
+
+    public void setPinyin(String pinyin) {
+        this.pinyin = pinyin;
+    }
+
     @Override
     public String toString() {
         return "City{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", pinyin='" + pinyin + '\'' +
                 '}';
     }
+
 }
