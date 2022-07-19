@@ -47,6 +47,7 @@ public class DispatchServlet extends Servlet {
         try {
             doDispatch(request, response);
         } catch (Exception e) {
+            e.printStackTrace();
             response.write("500  " + e.getMessage());
         }
     }
