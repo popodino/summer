@@ -33,8 +33,8 @@ public class SummerBoot {
 
             while (true){
                 Socket client = server.accept();
-
                 process(client);
+                client.close();
             }
 
         } catch (Exception e) {
@@ -44,17 +44,15 @@ public class SummerBoot {
     }
 
     private static void process(Socket client) throws Exception {
-        InputStream in = client.getInputStream();
-        OutputStream out = client.getOutputStream();
+        try (InputStream in = client.getInputStream();
+             OutputStream out = client.getOutputStream()) {
+            Request request = new Request(in);
+            Response response = new Response(out);
 
-        Request request = new Request(in);
-        Response response = new Response(out);
-
-        dispatchServlet.service(request, response);
-
-        out.flush();
-        out.close();
-        in.close();
-        client.close();
+            dispatchServlet.service(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
     }
 }
