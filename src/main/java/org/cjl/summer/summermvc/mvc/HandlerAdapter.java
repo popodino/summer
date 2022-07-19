@@ -46,51 +46,32 @@ public class HandlerAdapter {
             throw new RuntimeException("method not allowed!");
         }
 
-        Class<?>[] parameterTypes = handlerMapping.getMethod().getParameterTypes();
+        Parameter[] parameters = ((HandlerMapping) handler).getMethod().getParameters();
 
-        Object[] paramValues = new Object[parameterTypes.length];
+        Object[] paramValues = new Object[parameters.length];
 
-        Map<String, Integer> paramIndexMapping = new HashMap<>();
-
-        Annotation[][] annotations = ((HandlerMapping) handler).getMethod().getParameterAnnotations();
-
-        for (int i = 0; i < annotations.length; i++) {
-            for (Annotation annotation : annotations[i]) {
-                if (annotation instanceof RequestParam) {
-                    String paramName = ((RequestParam) annotation).value();
-                    boolean require = ((RequestParam) annotation).require();
-                    if (require && (request.getParameter(paramName) == null
-                            || "".equals(request.getParameter(paramName)))) {
-                        throw new RuntimeException("parameter " + paramName + " not found!");
-                    }
-                    if (!"".equals(paramName)) {
-                        paramIndexMapping.put(paramName, i);
-                    }
-                } else if (annotation instanceof PathVariable) {
-                    String paramName = ((PathVariable) annotation).value();
-                    boolean require = ((PathVariable) annotation).require();
-                    int index = handlerMapping.getPathVariableIndex(paramName);
-                    if (require && (index < 0 || request.getPathVariable().length < (index + 1)
-                            || "".equals(request.getPathVariable()[index]))) {
-                        throw new RuntimeException("pathVariable " + paramName + " not found!");
-                    }
-                    paramValues[i] = request.getPathVariable()[index];
+        for (int i = 0; i < parameters.length; i++) {
+            Class<?> type = parameters[i].getType();
+            if (parameters[i].isAnnotationPresent(RequestParam.class)) {
+                RequestParam requestParam = parameters[i].getAnnotation(RequestParam.class);
+                String paramName = requestParam.value();
+                if (requestParam.require() && (request.getParameter(paramName) == null
+                        || "".equals(request.getParameter(paramName)))) {
+                    throw new RuntimeException("parameter " + paramName + " not found!");
                 }
-            }
-        }
-
-        Map<String, String[]> parameterMap = request.getParameterMap();
-
-        parameterMap.forEach((key, value) -> {
-            if (paramIndexMapping.containsKey(key)) {
-                int index = paramIndexMapping.get(key);
-                paramValues[index] = caseRequestValue(value[0], parameterTypes[index]);
-            }
-        });
-
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> type = parameterTypes[i];
-            if (type == Request.class) {
+                if (!"".equals(paramName)) {
+                    paramValues[i] = caseRequestValue(request.getParameter(paramName), type);
+                }
+            } else if (parameters[i].isAnnotationPresent(PathVariable.class)) {
+                PathVariable pathVariable = parameters[i].getAnnotation(PathVariable.class);
+                String paramName = pathVariable.value();
+                int index = handlerMapping.getPathVariableIndex(paramName);
+                if (pathVariable.require() && (index < 0 || request.getPathVariable().length < (index + 1)
+                        || "".equals(request.getPathVariable()[index]))) {
+                    throw new RuntimeException("pathVariable " + paramName + " not found!");
+                }
+                paramValues[i] = caseRequestValue(request.getPathVariable()[index], type);
+            } else if (type == Request.class) {
                 paramValues[i] = request;
             } else if (type == Response.class) {
                 paramValues[i] = response;
@@ -98,7 +79,6 @@ public class HandlerAdapter {
                 paramValues[i] = JSON.parseObject(request.getRequestBody(), type);
             }
         }
-
 
         Object result = handlerMapping.getMethod().invoke(handlerMapping.getController(), paramValues);
         if (null == result) {
