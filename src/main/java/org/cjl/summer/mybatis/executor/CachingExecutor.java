@@ -34,6 +34,7 @@ public class CachingExecutor implements Executor {
         cacheKey.update(joinStr(parameter));
 
         if (cache.containsKey(cacheKey.getCode())){
+            System.out.println("[Info] Mybatis: Get from cache");
             return (List<T>) cache.get(cacheKey.getCode());
         }else {
             List<T> result = delegate.query(statement,parameter,resultType);

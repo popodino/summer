@@ -152,7 +152,7 @@ public class DispatchServlet extends Servlet {
                         HandlerMapping handlerMapping = new HandlerMapping(applicationContext.getBean(beanName), method, methodType, pattern
                                 ,regex.replaceFirst("/","").split("/"));
                         handlerMappings.add(handlerMapping);
-                        System.out.println("[Info] Mapped: " + methodType + " --> " + regex + " --> " + method);
+                        System.out.println("[Info] Mapped API: " + methodType + " --> " + regex + " --> " + method);
 
                     }
 

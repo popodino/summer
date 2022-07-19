@@ -29,7 +29,7 @@ public class SummerBoot {
 
         try {
             ServerSocket server = new ServerSocket(port);
-            System.out.println("[info] tomcat start at port: " + port);
+            System.out.println("[Info] SummerBoot: Tomcat start at port: " + port);
 
             while (true){
                 Socket client = server.accept();
