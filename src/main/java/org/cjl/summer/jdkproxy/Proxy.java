@@ -130,25 +130,25 @@ public class Proxy {
                         " new Class[]{" + paramClasses.toString() + "});" + LN);
                 code.append(method.getReturnType() == void.class ? "" : "return " + "(" + method.getReturnType().getName() + ")"
                         + "this.h.invoke(this,m,new Object[]{" + paramValues.toString() + "});");
-                code.append("}catch(Throwable e){" + LN);
-                //code.append("throw new Exception(e);" + LN);
-                code.append("}");
-                code.append(getReturnEmptyCode(method.getReturnType()));
-                code.append("}");
+                code.append("} catch(Throwable e){" + LN);
+                code.append("e.printStackTrace();" + LN);
+                code.append("}" + LN);
+                code.append(getReturnEmptyCode(method.getReturnType()) + LN);
+                code.append("}" + LN);
             }
         }
 
         code.append("}");
 
-//        System.out.println(code.toString());
+        //System.out.println(code.toString());
 //        System.out.println("=================================");
         return code.toString();
     }
 
     private static String toLowerFirstCase(String str) {
         str = str.replace("[]", "");
-        String firstCase = str.substring(0,1).toLowerCase();
-        return firstCase + str.substring(1,str.length());
+        String firstCase = str.substring(0, 1).toLowerCase();
+        return firstCase + str.substring(1, str.length());
     }
 
     private static String getReturnEmptyCode(Class<?> returnClass) {
