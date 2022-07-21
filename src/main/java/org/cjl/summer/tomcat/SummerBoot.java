@@ -34,8 +34,8 @@ public class SummerBoot {
 
             while (true) {
                 Socket client = server.accept();
-
                 process(client);
+                client.close();
             }
 
         } catch (Exception e) {
