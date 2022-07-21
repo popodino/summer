@@ -4,6 +4,7 @@ import org.cjl.summer.mybatis.executor.Executor;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @Title: DefaultSqlSession
@@ -35,7 +36,7 @@ public class DefaultSqlSession {
         String sql = configuration.getStatement(statement);
         sql = (null == sql || "".equals(sql)) ? statement : sql;
         List<T> resultList = executor.query(sql, parameters, resultType);
-        return (null != resultList && !resultList.isEmpty()) ? resultList.get(0) : null;
+        return Optional.ofNullable(resultList).map(result->result.get(0)).orElse(null);
     }
 
     public <T> List<T> selectList(String statement, Object[] parameters, Class resultType) throws SQLException {

@@ -5,6 +5,7 @@ import org.cjl.summer.summermvc.aop.aspect.JoinPoint;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * @Title: TestAspect
@@ -43,7 +44,7 @@ public class TestAspect {
         System.out.println("[Info] [Around] actionName: " + joinPoint.getMethod().getName()
                 + " , args: "+ Arrays.toString(joinPoint.getArguments())
                 + " , timeSpend: " + (endTime - startTime) + "ms"
-                + " , result: " + obj.toString());
+                + " , result: " + Optional.ofNullable(obj).orElse("no result").toString());
         return obj;
     }
 
