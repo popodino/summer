@@ -17,8 +17,6 @@ import java.net.Socket;
  * @Version: V1.0
  */
 public class SummerBoot {
-    private static int port = 8080;
-
     private static DispatchServlet dispatchServlet;
 
     private static void init(Class<?> clazz) {
@@ -29,8 +27,10 @@ public class SummerBoot {
         init(clazz);
 
         try {
+            String serverPort = dispatchServlet.getApplicationContext().getConfig().getProperty("server.port","8080");
+            int port = Integer.parseInt(serverPort.matches("\\d*") && !serverPort.isEmpty() ? serverPort :"8080");
             ServerSocket server = new ServerSocket(port);
-            System.out.println("[Info] SummerBoot: Tomcat start at port: " + port);
+            System.out.println("[info] tomcat start at port: " + port);
 
             while (true) {
                 Socket client = server.accept();
