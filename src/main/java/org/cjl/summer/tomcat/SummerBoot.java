@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.StandardSocketOptions;
+import java.util.Optional;
 
 /**
  * @Title: Tomcat
@@ -17,21 +19,21 @@ import java.net.Socket;
  * @Version: V1.0
  */
 public class SummerBoot {
-    private static int port = 8080;
-
     private static DispatchServlet dispatchServlet;
-    private static void init(Class<?> clazz){
+    private static void init(Class<?> clazz) {
         dispatchServlet = new DispatchServlet(clazz);
     }
 
-    public static void run(Class<?> clazz){
+    public static void run(Class<?> clazz) {
         init(clazz);
 
         try {
+            String serverPort = dispatchServlet.getApplicationContext().getConfig().getProperty("server.port","8080");
+            int port = Integer.parseInt(serverPort.matches("\\d*") && !serverPort.isEmpty() ? serverPort :"8080");
             ServerSocket server = new ServerSocket(port);
             System.out.println("[info] tomcat start at port: " + port);
 
-            while (true){
+            while (true) {
                 Socket client = server.accept();
                 process(client);
                 client.close();

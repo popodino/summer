@@ -4,6 +4,8 @@ import org.cjl.summer.mybatis.annotation.MapperScan;
 import org.cjl.summer.summermvc.annotation.*;
 import org.cjl.summer.tomcat.SummerBoot;
 
+import java.util.Optional;
+
 /**
  * @Title: TestSummerBoot
  * @Package: org.cjl.summer
@@ -17,10 +19,14 @@ import org.cjl.summer.tomcat.SummerBoot;
 @ComponentScan("org.cjl.summer")
 @RestController()
 @MapperScan(basePackages = "org.cjl.summer")
+@ConfigurationProperties(prefix = "TestSummerBoot")
 public class TestSummerBoot {
 
     @Autowired
-    TestService testService;
+    private TestService testService;
+
+    @Value("resetId.enabled")
+    private boolean resetId;
 
     public static void main(String[] args) {
         new SummerBoot().run(TestSummerBoot.class);
@@ -28,6 +34,9 @@ public class TestSummerBoot {
 
     @GetMapping("/city")
     public City test(@RequestParam("id") int id) throws Exception {
+        if (resetId) {
+            id = 110100;
+        }
         City city = testService.getCityById(id);
         return city;
     }
@@ -35,13 +44,13 @@ public class TestSummerBoot {
     @PostMapping("/city/update")
     public City testPost(City city) throws Exception {
         testService.updateCityName(city);
-       return testService.getCityById(city.getId());
+        return testService.getCityById(city.getId());
     }
 
     @GetMapping("/city/{id}/check")
     public City testPath(@PathVariable("id") int id, @RequestParam("pinyin") String pinyin) throws Exception {
         City city = testService.getCityById(id);
-        if(city == null || !city.getPinyin().equalsIgnoreCase(pinyin)){
+        if (city == null || !city.getPinyin().equalsIgnoreCase(pinyin)) {
             return null;
         }
         return city;

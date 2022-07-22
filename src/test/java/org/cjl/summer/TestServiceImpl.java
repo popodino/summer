@@ -2,6 +2,7 @@ package org.cjl.summer;
 
 import org.cjl.summer.summermvc.annotation.Autowired;
 import org.cjl.summer.summermvc.annotation.Service;
+import org.cjl.summer.summermvc.annotation.Value;
 
 /**
  * @Title: TestA
@@ -15,7 +16,7 @@ import org.cjl.summer.summermvc.annotation.Service;
 public class TestServiceImpl implements TestService {
 
     @Autowired
-    TestMapper testMapper;
+    private TestMapper testMapper;
 
     @Override
     public City getCityById(Integer id) throws Exception {
