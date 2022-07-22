@@ -129,9 +129,9 @@ public class Proxy {
                 code.append("Method m = " + anInterface.getName() + ".class.getMethod(\"" + method.getName() + "\"," +
                         " new Class[]{" + paramClasses.toString() + "});" + LN);
                 code.append(method.getReturnType() == void.class ? "" : "return " + "(" + method.getReturnType().getName() + ")"
-                        + "this.h.invoke(this,m,new Object[]{" + paramValues.toString() + "});");
+                        + "this.h.invoke(this,m,new Object[]{" + paramValues.toString() + "});" + LN);
                 code.append("}catch(Throwable e){" + LN);
-                //code.append("throw new Exception(e);" + LN);
+                code.append("e.printStackTrace();" + LN);
                 code.append("}");
                 code.append(getReturnEmptyCode(method.getReturnType()));
                 code.append("}");
