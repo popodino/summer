@@ -14,11 +14,13 @@ import org.cjl.summer.summermvc.beans.config.BeanDefinition;
 import org.cjl.summer.summermvc.beans.support.BeanDefinitionReader;
 import org.cjl.summer.summermvc.core.BeanFactory;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,33 +32,34 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Version: V1.0
  */
 public class ApplicationContext implements BeanFactory {
+    private final static String DEFAULT_CONFIG_LOCATION = "application.properties";
     private String[] configLocations;
     private String scanPackage;
-
     private String mapperScanPackage;
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
-
     private Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>();
-
     private Map<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
-
     private List<AopAspect> aspectList = new ArrayList<>();
     private BeanDefinitionReader reader;
+
+    private Properties config = new Properties();
 
     public ApplicationContext(String... configLocations) {
         this.configLocations = configLocations;
 
-        try {
+        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_CONFIG_LOCATION)) {
+            config.load(in);
             refresh();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public ApplicationContext(String scanPackage,String mapperScanPackage) {
+    public ApplicationContext(String scanPackage, String mapperScanPackage) {
         this.scanPackage = scanPackage;
         this.mapperScanPackage = mapperScanPackage;
-        try {
+        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_CONFIG_LOCATION)) {
+            config.load(in);
             refresh();
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,9 +67,9 @@ public class ApplicationContext implements BeanFactory {
     }
 
     private void refresh() throws Exception {
-        if(null == scanPackage || "".equals(scanPackage)){
+        if (null == scanPackage || "".equals(scanPackage)) {
             reader = new BeanDefinitionReader(configLocations);
-        }else {
+        } else {
             reader = new BeanDefinitionReader(scanPackage);
         }
 
@@ -104,36 +107,60 @@ public class ApplicationContext implements BeanFactory {
 
     @Override
     public Object getBean(String beanName) throws Exception {
-        if (this.factoryBeanInstanceCache.containsKey(beanName)){
+        if (this.factoryBeanInstanceCache.containsKey(beanName)) {
             return this.factoryBeanInstanceCache.get(beanName).getWrappedInstance();
         }
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
         BeanWrapper beanWrapper = instantiateBean(beanName, beanDefinition);
-        this.factoryBeanInstanceCache.put(beanName,beanWrapper);
-        populateBean(beanWrapper.getWrappedInstance(),beanWrapper.getWrappedClass());
+        this.factoryBeanInstanceCache.put(beanName, beanWrapper);
+        populateBean(beanWrapper.getWrappedInstance(), beanWrapper.getWrappedClass());
         return beanWrapper.getWrappedInstance();
     }
 
     private void populateBean(Object instance, Class<?> beanClass) throws ClassNotFoundException {
         Field[] fields = beanClass.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(Autowired.class)){
+            if (field.isAnnotationPresent(Autowired.class)) {
                 Autowired autowired = field.getAnnotation(Autowired.class);
                 String autowiredBeanName = autowired.value().trim();
-                if("".equals(autowiredBeanName)){
+                if ("".equals(autowiredBeanName)) {
                     autowiredBeanName = field.getType().getName();
                 }
-                field.setAccessible(true);
-
                 try {
-                    if(this.factoryBeanInstanceCache.containsKey(autowiredBeanName)){
+                    if (this.factoryBeanInstanceCache.containsKey(autowiredBeanName)) {
+                        field.setAccessible(true);
                         field.set(instance, this.factoryBeanInstanceCache.get(autowiredBeanName).getWrappedInstance());
                     }
                 } catch (Exception e) {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 }
 
+            } else if (field.isAnnotationPresent(Value.class)) {
+                Value value = field.getAnnotation(Value.class);
+                if ("".equals(value.value())) {
+                    continue;
+                }
+
+                StringBuffer propertiesName = new StringBuffer();
+                if (beanClass.isAnnotationPresent(ConfigurationProperties.class)) {
+                    ConfigurationProperties configurationProperties = beanClass.getAnnotation(ConfigurationProperties.class);
+                    propertiesName.append(configurationProperties.prefix()).append(".");
+                }
+                propertiesName.append(value.value());
+                String propertiesValue = config.getProperty(propertiesName.toString());
+
+                if (propertiesValue == null) {
+                    continue;
+                }
+                try {
+                    field.setAccessible(true);
+                    setFieldValue(field, instance, propertiesValue);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
             }
+
         }
 
     }
@@ -150,7 +177,7 @@ public class ApplicationContext implements BeanFactory {
                 Object instance = clazz.getConstructor().newInstance();
                 for (AopAspect aopAspect : aspectList) {
                     if (aopAspect.pointCutMatchClass(clazz)) {
-                        populateBean(instance,clazz);
+                        populateBean(instance, clazz);
                         AdvisedSupport advisedSupport = new AdvisedSupport(clazz, instance, aopAspect);
                         instance = createProxy(advisedSupport).getproxy();
                     }
@@ -207,12 +234,32 @@ public class ApplicationContext implements BeanFactory {
         }
     }
 
-    public Map<String, BeanDefinition> getBeanDefinitionMap(){
+    public Map<String, BeanDefinition> getBeanDefinitionMap() {
         return beanDefinitionMap;
     }
 
+    public Properties getConfig() {
+        return this.config;
+    }
+
+    private void setFieldValue(Field field, Object instance, String fieldValue) throws IllegalAccessException {
+        Class type = field.getType();
+        if (Integer.class == type || int.class == type) {
+            field.set(instance, Integer.parseInt(fieldValue));
+        } else if (Long.class == type || long.class == type) {
+            field.set(instance, Long.parseLong(fieldValue));
+        } else if (Boolean.class == type || boolean.class == type) {
+            field.set(instance, Boolean.parseBoolean(fieldValue));
+        } else if (Double.class == type || double.class == type) {
+            field.set(instance, Double.parseDouble(fieldValue));
+        } else {
+            field.set(instance, fieldValue);
+        }
+
+    }
+
     private void doRegistryMybatisMapper() {
-        if(mapperScanPackage != null && !"".equals(mapperScanPackage)){
+        if (mapperScanPackage != null && !"".equals(mapperScanPackage)) {
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactory(mapperScanPackage);
             DefaultSqlSession sqlSession = sqlSessionFactory.openSqlSession();
             factoryBeanInstanceCache.putAll(sqlSession.getConfiguration().registryAllMapper(sqlSession));

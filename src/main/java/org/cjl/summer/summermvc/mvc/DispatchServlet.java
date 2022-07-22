@@ -24,8 +24,6 @@ import java.util.regex.Pattern;
  * @Version: V1.0
  */
 public class DispatchServlet extends Servlet {
-
-    private final static String[] CONFIG_LOCATION = {"classpath:application.properties"};
     private Class<?> summerBootClass;
     private ApplicationContext applicationContext;
 
@@ -47,6 +45,7 @@ public class DispatchServlet extends Servlet {
         try {
             doDispatch(request, response);
         } catch (Exception e) {
+            e.printStackTrace();
             response.write("500  " + e.getMessage());
         }
     }
@@ -88,7 +87,7 @@ public class DispatchServlet extends Servlet {
         ComponentScan componentScan = summerBootClass.getAnnotation(ComponentScan.class);
         MapperScan mapperScan = summerBootClass.getAnnotation(MapperScan.class);
         if (null == componentScan || "".equals(componentScan.value())) {
-            applicationContext = new ApplicationContext(CONFIG_LOCATION);
+            applicationContext = new ApplicationContext(new String[]{""});
         } else {
             applicationContext = new ApplicationContext(componentScan.value()
                     , mapperScan == null ? "" : mapperScan.basePackages());
@@ -161,5 +160,9 @@ public class DispatchServlet extends Servlet {
                 e.printStackTrace();
             }
         });
+    }
+
+    public ApplicationContext getApplicationContext(){
+        return this.applicationContext;
     }
 }
