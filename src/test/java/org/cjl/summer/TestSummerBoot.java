@@ -4,7 +4,6 @@ import org.cjl.summer.mybatis.annotation.MapperScan;
 import org.cjl.summer.summermvc.annotation.*;
 import org.cjl.summer.tomcat.SummerBoot;
 
-import java.util.Optional;
 
 /**
  * @Title: TestSummerBoot

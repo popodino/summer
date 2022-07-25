@@ -2,10 +2,11 @@ package org.cjl.summer.tomcat;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Title: Request
@@ -17,23 +18,23 @@ import java.util.*;
  */
 public class Request {
 
-    private String method = "";
-    private String uri = "";
+    private final String method;
+    private final String uri;
     private String contextPath = "";
 
-    private String requestBody = "";
+    private final String requestBody;
 
-    private String[] pathVariable;
+    private final String[] pathVariable;
 
-    private Map<String, List<String>> parameters = new HashMap<>();
-    private Map<String, String[]> parameterMap = new HashMap<>();
+    private final Map<String, List<String>> parameters = new HashMap<>();
+    private final Map<String, String[]> parameterMap = new HashMap<>();
 
     public Request(InputStream in) {
 
         try {
             String content = "";
             byte[] buff = new byte[1024];
-            int len = 0;
+            int len;
 
             if ((len = in.read(buff)) > 0) {
                 content = new String(buff, 0, len);
@@ -46,8 +47,8 @@ public class Request {
             this.uri = header[1];
 
             if (uri.contains("?")) {
-                this.contextPath = uri.substring(uri.indexOf("?"), uri.length());
-                String paramStr = uri.substring(uri.indexOf("?") + 1, uri.length());
+                this.contextPath = uri.substring(uri.indexOf("?"));
+                String paramStr = uri.substring(uri.indexOf("?") + 1);
                 if (paramStr.contains("&")) {
                     String[] params = paramStr.split("&");
                     for (String param : params) {
@@ -57,9 +58,7 @@ public class Request {
                     appendParameter(paramStr);
                 }
 
-                parameters.forEach((key, value) -> {
-                    parameterMap.put(key, value.toArray(new String[0]));
-                });
+                parameters.forEach((key, value) -> parameterMap.put(key, value.toArray(new String[0])));
                 pathVariable = uri.replace(contextPath, "").replaceFirst("/", "").split("/");
 
             } else {
@@ -69,14 +68,16 @@ public class Request {
             BufferedReader bufferedReader = new BufferedReader(new StringReader(content));
             String lineContent;
             boolean hasRequestBody = false;
+            StringBuilder body = new StringBuilder();
             while ((lineContent = bufferedReader.readLine()) != null) {
                 if (hasRequestBody) {
-                    requestBody += lineContent;
+                    body.append(lineContent);
                 }
                 if (lineContent.trim().isEmpty()) {
                     hasRequestBody = true;
                 }
             }
+            requestBody = body.toString();
             bufferedReader.close();
         } catch (Exception e) {
             throw new RuntimeException(e);

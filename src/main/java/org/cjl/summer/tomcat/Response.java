@@ -12,7 +12,7 @@ import java.io.OutputStream;
  * @Version: V1.0
  */
 public class Response {
-    private OutputStream out;
+    private final OutputStream out;
 
     public Response(OutputStream out){
         this.out = out;
@@ -20,11 +20,10 @@ public class Response {
     }
 
     public void write(String content) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("HTTP/1.1 200 OK\n")
-                .append("Content-Type: text/html; charset=utf-8\n")
-                .append("\r\n")
-                .append(content);
-        out.write(sb.toString().getBytes());
+        String sb = "HTTP/1.1 200 OK\n" +
+                "Content-Type: text/html; charset=utf-8\n" +
+                "\r\n" +
+                content;
+        out.write(sb.getBytes());
     }
 }

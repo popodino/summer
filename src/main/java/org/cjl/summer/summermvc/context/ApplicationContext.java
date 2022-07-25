@@ -1,6 +1,5 @@
 package org.cjl.summer.summermvc.context;
 
-import org.cjl.summer.mybatis.session.Configuration;
 import org.cjl.summer.mybatis.session.DefaultSqlSession;
 import org.cjl.summer.mybatis.session.SqlSessionFactory;
 import org.cjl.summer.summermvc.annotation.*;
@@ -36,13 +35,12 @@ public class ApplicationContext implements BeanFactory {
     private String[] configLocations;
     private String scanPackage;
     private String mapperScanPackage;
-    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
-    private Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>();
-    private Map<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
-    private List<AopAspect> aspectList = new ArrayList<>();
-    private BeanDefinitionReader reader;
+    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>();
+    private final Map<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
+    private final List<AopAspect> aspectList = new ArrayList<>();
 
-    private Properties config = new Properties();
+    private final Properties config = new Properties();
 
     public ApplicationContext(String... configLocations) {
         this.configLocations = configLocations;
@@ -67,6 +65,7 @@ public class ApplicationContext implements BeanFactory {
     }
 
     private void refresh() throws Exception {
+        BeanDefinitionReader reader;
         if (null == scanPackage || "".equals(scanPackage)) {
             reader = new BeanDefinitionReader(configLocations);
         } else {
@@ -106,18 +105,18 @@ public class ApplicationContext implements BeanFactory {
     }
 
     @Override
-    public Object getBean(String beanName) throws Exception {
+    public Object getBean(String beanName) {
         if (this.factoryBeanInstanceCache.containsKey(beanName)) {
             return this.factoryBeanInstanceCache.get(beanName).getWrappedInstance();
         }
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-        BeanWrapper beanWrapper = instantiateBean(beanName, beanDefinition);
+        BeanWrapper beanWrapper = instantiateBean(beanDefinition);
         this.factoryBeanInstanceCache.put(beanName, beanWrapper);
         populateBean(beanWrapper.getWrappedInstance(), beanWrapper.getWrappedClass());
         return beanWrapper.getWrappedInstance();
     }
 
-    private void populateBean(Object instance, Class<?> beanClass) throws ClassNotFoundException {
+    private void populateBean(Object instance, Class<?> beanClass) {
         Field[] fields = beanClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Autowired.class)) {
@@ -141,7 +140,7 @@ public class ApplicationContext implements BeanFactory {
                     continue;
                 }
 
-                StringBuffer propertiesName = new StringBuffer();
+                StringBuilder propertiesName = new StringBuilder();
                 if (beanClass.isAnnotationPresent(ConfigurationProperties.class)) {
                     ConfigurationProperties configurationProperties = beanClass.getAnnotation(ConfigurationProperties.class);
                     propertiesName.append(configurationProperties.prefix()).append(".");
@@ -165,7 +164,7 @@ public class ApplicationContext implements BeanFactory {
 
     }
 
-    private BeanWrapper instantiateBean(String beanName, BeanDefinition beanDefinition) {
+    private BeanWrapper instantiateBean(BeanDefinition beanDefinition) {
         String beanClassName = beanDefinition.getBeanClassName();
         BeanWrapper beanWrapper = null;
 
@@ -201,7 +200,7 @@ public class ApplicationContext implements BeanFactory {
 
 
     @Override
-    public Object getBean(Class<?> beanClass) throws Exception {
+    public Object getBean(Class<?> beanClass) {
         return getBean(beanClass.getName());
     }
 
@@ -243,7 +242,7 @@ public class ApplicationContext implements BeanFactory {
     }
 
     private void setFieldValue(Field field, Object instance, String fieldValue) throws IllegalAccessException {
-        Class type = field.getType();
+        Class<?> type = field.getType();
         if (Integer.class == type || int.class == type) {
             field.set(instance, Integer.parseInt(fieldValue));
         } else if (Long.class == type || long.class == type) {
